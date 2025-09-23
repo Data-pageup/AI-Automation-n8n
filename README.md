@@ -20,3 +20,6 @@ This project was built as part of my learning.
 - [Pandas](https://pandas.pydata.org/) & [NumPy](https://numpy.org/) for data handling  
 
 ---
+# 📊 Placement Predictor
+
+🔗 **Live App:** [Open in Streamlit]( https://placement-predictor-pickle.streamlit.app/ )
