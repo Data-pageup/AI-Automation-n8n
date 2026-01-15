@@ -15,7 +15,8 @@ This project was built as part of my learning.
 
 ## 🛠️ Tech Stack
 - [Python 3.x](https://www.python.org/)  
-- [Streamlit](https://streamlit.io/) for the web app  
+- [Streamlit](https://streamlit.io/) for the web
+ app  
 - [scikit-learn](https://scikit-learn.org/) for the ML model  
 - [Pandas](https://pandas.pydata.org/) & [NumPy](https://numpy.org/) for data handling  
 
