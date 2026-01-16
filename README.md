@@ -12,6 +12,7 @@ This project was built as part of my learning.
 - ✅ Uses a pre-trained ML model (`model.pkl`) built with scikit-learn.  
 - ✅ Clear Yes/No output with optional probability scores.  
 
+
 ---
 
 ## 🛠️ Tech Stack
