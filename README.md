@@ -1,3 +1,4 @@
+
 # 📊 Placement Predictor 
 
 A Streamlit web app that predicts whether a student will be placed based on academic and extracurricular features.  
