@@ -16,9 +16,9 @@
 
 ## ⚡ What is this?
 
-A collection of **AI-powered automation workflows** built with n8n — focused on agentic research, web intelligence, and AI-assisted decision-making.
+A collection of **AI-powered automation workflows** built with n8n focused on agentic research, web intelligence, and AI-assisted decision-making.
 
-These aren't copy-pasted templates. They started as experiments and evolved into full-blown **autonomous systems** that research, analyze, crawl, and decide — while you grab a coffee. ☕
+These aren't copy-pasted templates. They started as experiments and evolved into full-blown **autonomous systems** that research, analyze, crawl, and decide while you grab a coffee. ☕
 
 > 💡 Instead of using AI to just *generate text*, these workflows give agents an actual **job to do**.
 
