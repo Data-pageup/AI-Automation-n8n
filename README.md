@@ -158,9 +158,8 @@ AI-Automation-Lab/
 
 ## ⚠️ Disclaimer
 
-These workflows are experimental projects built for learning, experimentation, and practical AI automation.
 
-**AI-generated research and recommendations should be independently verified** before being used for important decisions. Don't let the robots make your life choices for you. 🤖
+ Don't let the robots make your life choices for you.  We are more than that .
 
 ---
 
