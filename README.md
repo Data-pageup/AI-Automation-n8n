@@ -1,100 +1,106 @@
-# AI Automation Lab
+<div align="center">
 
-A collection of AI-powered automation workflows built with **n8n**, focused on practical agentic workflows, research automation, web intelligence, and AI-assisted decision making.
+# 🤖 AI Automation Lab
 
-These projects started as experiments with n8n workflows and evolved into customized automation systems rather than simply importing templates.
+### Autonomous agents that actually *do* the work — not just talk about it.
 
----
+![n8n](https://img.shields.io/badge/n8n-EA4B71?style=for-the-badge&logo=n8n&logoColor=white)
+![OpenAI](https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![Status](https://img.shields.io/badge/status-experimental-orange?style=for-the-badge)
+![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)
 
-## Projects
-
-### 1. AI Research War Room
-A multi-agent research workflow that investigates a topic from different perspectives and produces a consolidated research report.
-
-The workflow uses specialized AI agents for:
-- Technical research
-- Industry and market research
-- Critical analysis and fact-checking
-- Final synthesis
-
-The goal is to simulate a research team where multiple agents investigate independently before a lead agent combines their findings.
-
-### 2. Autonomous Job Hunter & Resume Matcher
-An AI-powered job analysis workflow that evaluates a job posting against a candidate profile.
-
-It:
-- Extracts job requirements
-- Compares required skills with the candidate profile
-- Calculates a match score
-- Identifies matching and missing skills
-- Highlights experience gaps
-- Suggests resume improvements
-- Generates interview preparation points
-- Recommends **APPLY**, **CONSIDER**, or **SKIP**
-
-The goal is to turn a job description into an actionable application strategy.
-
-### 3. AI Company Intelligence Agent
-An AI research agent designed to investigate a company using its website and publicly available pages.
-
-It analyzes:
-- Company overview
-- Products and services
-- AI and technology
-- Target customers
-- Careers and hiring information
-- Competitors and alternatives
-- Important company pages
-- Research takeaways
-
-The workflow is useful for company research, interview preparation, and understanding organizations before applying or reaching out.
-
-### 4. Autonomous AI Crawler
-An n8n-based web crawling workflow that automatically discovers and processes information from websites.
-
-The workflow handles:
-- Web page crawling
-- HTML extraction
-- Markdown conversion
-- URL processing
-- Duplicate removal
-- Content filtering
-- Structured information extraction
-
-The crawler architecture can be adapted for different research and information-extraction use cases.
+</div>
 
 ---
 
-## Tech Stack
+## ⚡ What is this?
 
-- n8n
-- AI Agents
-- OpenAI
-- Tavily
-- HTTP APIs
-- Web Crawling
-- Structured JSON Outputs
-- JavaScript
-- Workflow Automation
+A collection of **AI-powered automation workflows** built with n8n — focused on agentic research, web intelligence, and AI-assisted decision-making.
+
+These aren't copy-pasted templates. They started as experiments and evolved into full-blown **autonomous systems** that research, analyze, crawl, and decide — while you grab a coffee. ☕
+
+> 💡 Instead of using AI to just *generate text*, these workflows give agents an actual **job to do**.
 
 ---
 
-## Architecture
+## 🚀 Projects
+
+### 🕵️ 1. AI Research War Room
+*Multiple AI agents walk into a research topic. One report walks out.*
+
+A multi-agent workflow that investigates a topic from every angle and consolidates it into one clean report.
+
+| Agent | Role |
+|---|---|
+| 🔬 Technical | Deep-dives the tech |
+| 📈 Market | Industry & competitive landscape |
+| 🧐 Critical | Fact-checks & pressure-tests findings |
+| 🧠 Synthesis | Combines everything into the final report |
+
+---
+
+### 💼 2. Autonomous Job Hunter & Resume Matcher
+*Stop guessing if you're a fit. Let the agent do the math.*
+
+Feeds a job posting + your profile into an AI pipeline that:
+- ✅ Extracts job requirements
+- 🎯 Calculates a match score
+- 🔍 Flags matching & missing skills
+- 📊 Highlights experience gaps
+- ✍️ Suggests resume tweaks
+- 🗣️ Preps you for the interview
+- 🚦 Verdict: **APPLY** / **CONSIDER** / **SKIP**
+
+---
+
+### 🏢 3. AI Company Intelligence Agent
+*Know the company before they know you.*
+
+Points an AI agent at a company's public web presence and returns a full intel report:
+
+`Overview` · `Products` · `AI/Tech Stack` · `Target Customers` · `Hiring Signals` · `Competitors` · `Key Pages` · `Takeaways`
+
+Perfect for interview prep, cold outreach, or just nosy research. 👀
+
+---
+
+### 🕸️ 4. Autonomous AI Crawler
+*Point it at the web. Get structured data back.*
+
+An n8n-based crawler that discovers, extracts, and cleans web content on autopilot:
+
+`Crawl` → `Extract HTML` → `Convert to Markdown` → `Dedupe` → `Filter` → `Structure`
+
+Adaptable architecture — plug it into any research or extraction use case.
+
+---
+
+## 🛠️ Tech Stack
+
+<div align="left">
+
+`n8n` • `AI Agents` • `OpenAI` • `Tavily` • `HTTP APIs` • `Web Crawling` • `Structured JSON` • `JavaScript` • `Workflow Automation`
+
+</div>
+
+---
+
+## 🏗️ Architecture
 
 ```
                     ┌─────────────────────┐
-                    │      n8n Trigger     │
+                    │      n8n Trigger     │  ⚡
                     └──────────┬───────────┘
                                │
                                ▼
                     ┌─────────────────────┐
-                    │   Research / Input   │
+                    │   Research / Input   │  📥
                     └──────────┬───────────┘
                                │
                                ▼
                     ┌─────────────────────┐
-                    │      AI Agents       │
-                    │                      │
+                    │      AI Agents       │  🧠
                     │  Research            │
                     │  Analysis            │
                     │  Intelligence        │
@@ -103,44 +109,39 @@ The crawler architecture can be adapted for different research and information-e
                                │
                                ▼
                     ┌─────────────────────┐
-                    │  Tools / Web / APIs  │
+                    │  Tools / Web / APIs  │  🔧
                     └──────────┬───────────┘
                                │
                                ▼
                     ┌─────────────────────┐
-                    │  Structured Output   │
+                    │  Structured Output   │  📦
                     └─────────────────────┘
 ```
 
 ---
 
-## Why This Repository?
+## 🎯 Why This Repo Exists
 
-The purpose of this repository is to experiment with what can be built when **workflow automation + AI agents + external tools** are combined.
+Most "AI projects" stop at generating text. These don't.
 
-Instead of using AI only to generate text, these workflows focus on giving agents a job to perform:
+Every workflow here is built to:
 
-- Research something
-- Crawl information
-- Compare evidence
-- Analyze requirements
-- Make decisions
-- Produce structured outputs
+🔎 Research something → 🕸️ Crawl information → ⚖️ Compare evidence → 🧮 Analyze requirements → 🚦 Make decisions → 📦 Ship structured output
 
 ---
 
-## Getting Started
+## 🏁 Getting Started
 
-1. Install or run [n8n](https://n8n.io/).
-2. Clone this repository.
-3. Import the required `.json` workflow into n8n.
-4. Configure the required API credentials.
-5. Update the workflow inputs for your use case.
-6. Execute the workflow manually or connect it to a trigger.
+1. 📦 Install or run [n8n](https://n8n.io/)
+2. 🍴 Clone this repository
+3. 📥 Import the `.json` workflow you want into n8n
+4. 🔑 Configure your API credentials
+5. ⚙️ Update workflow inputs for your use case
+6. ▶️ Run it manually — or wire it to a trigger and let it fly
 
 ---
 
-## Repository Structure
+## 📁 Repository Structure
 
 ```
 AI-Automation-Lab/
@@ -155,7 +156,22 @@ AI-Automation-Lab/
 
 ---
 
-## Author
+## ⚠️ Disclaimer
+
+These workflows are experimental projects built for learning, experimentation, and practical AI automation.
+
+**AI-generated research and recommendations should be independently verified** before being used for important decisions. Don't let the robots make your life choices for you. 🤖
+
+---
+
+<div align="center">
+
+## 👤 Author
 
 **Amirtha Ganesh R**
-Data Science | Machine Learning | Generative AI | MLOps
+
+*Data Science | Machine Learning | Generative AI | MLOps*
+
+⭐ **If this repo helped you, consider dropping a star!** ⭐
+
+</div>
