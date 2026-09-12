@@ -1,0 +1,320 @@
+{
+  "name": "Autonomous Job Hunter & Resume Matcher",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "# Autonomous Job Hunter & Resume Matcher\n\nGive the agent a job URL (or a search URL), your target role, and optional preferences. It reads the job description, retrieves the candidate profile, compares requirements against the profile, scores the opportunity, recommends APPLY / CONSIDER / SKIP, and produces resume changes + interview preparation topics.\n\nThis is an agentic job-research workflow, not a blind auto-apply bot.",
+        "height": 290,
+        "width": 460,
+        "color": 5
+      },
+      "id": "269ba19a-3d1b-4b39-adcc-50ebf51d92d6",
+      "name": "Project Overview",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Change these inputs\n\n**job_url:** Official job posting URL.\n\n**target_role:** Role you want.\n\n**location_preference:** Optional location preference.\n\n**minimum_score:** Recommendation threshold.",
+        "height": 240,
+        "width": 380,
+        "color": 4
+      },
+      "id": "df55703d-50b7-4fae-ad0b-396aa8ceefb3",
+      "name": "Input Notes",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        390
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "b4249470-5b09-4d73-8524-09df6236f2ba",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -500,
+        720
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c2142a2c-51bf-4b34-aaa5-45a1a648a0ab",
+              "name": "job_url",
+              "value": "https://example.com/careers/data-scientist",
+              "type": "string"
+            },
+            {
+              "id": "e4074667-289f-4cee-9396-8665d4df69cb",
+              "name": "target_role",
+              "value": "Data Scientist / Machine Learning Engineer / AI Engineer",
+              "type": "string"
+            },
+            {
+              "id": "7592c205-144a-4d89-9187-a57f61288e12",
+              "name": "location_preference",
+              "value": "India / Remote",
+              "type": "string"
+            },
+            {
+              "id": "d9ec60f7-d84c-44ad-851f-b09f7b682046",
+              "name": "minimum_score",
+              "value": 75,
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": false,
+        "options": {}
+      },
+      "id": "320924e7-f4f2-4e70-86f8-c73506a94dfe",
+      "name": "Job Research Input",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        -260,
+        720
+      ]
+    },
+    {
+      "parameters": {
+        "text": "=Analyze this job opportunity: {{ $json.job_url }}. Target role: {{ $json.target_role }}. Location preference: {{ $json.location_preference }}. Minimum score for APPLY: {{ $json.minimum_score }}.",
+        "options": {
+          "systemMessage": "You are an autonomous job research and candidate matching agent. Your task is to evaluate a real job posting against a candidate profile. First use the Job Page Reader tool to retrieve the job page. Use the Candidate Profile tool to retrieve the candidate baseline. If the job URL is a search/results page rather than a single job posting, use the Job Search Reader to inspect the results and select the most relevant individual job URL, then read that job page. Do not invent job details, salary, requirements, locations, company facts, or candidate experience. Only claim a skill is a match when it is present in the candidate profile or clearly supported by the retrieved information. Separate missing skills from experience gaps. Calculate a match score from 0 to 100 using this guidance: required skills 45%, relevant experience 30%, role alignment 15%, location/work-mode alignment 10%. If a component cannot be verified, lower confidence and explain the limitation rather than making up evidence. Recommendation rule: APPLY when score >= the supplied minimum score and there is no major hard requirement that clearly disqualifies the candidate; CONSIDER for 55-74 or when a key requirement is uncertain; SKIP when the score is below 55 or there is a clearly unmet hard requirement. Produce practical resume changes using only truthful candidate information. Interview prep should be based on the actual job requirements. Return only the structured JSON required by the output parser."
+        },
+        "promptType": "define",
+        "hasOutputParser": true
+      },
+      "id": "cc07ed67-d750-4a22-879a-0fc24658b293",
+      "name": "Job Match Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        20,
+        720
+      ],
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {
+          "temperature": 0,
+          "responseFormat": "json_object"
+        },
+        "requestOptions": {}
+      },
+      "id": "ddb0f266-4db6-4b3e-8c2f-10edde09bdbb",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        1040
+      ]
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"job\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"company\": {\n          \"type\": \"string\"\n        },\n        \"title\": {\n          \"type\": \"string\"\n        },\n        \"location\": {\n          \"type\": \"string\"\n        },\n        \"work_mode\": {\n          \"type\": \"string\"\n        },\n        \"employment_type\": {\n          \"type\": \"string\"\n        },\n        \"experience_required\": {\n          \"type\": \"string\"\n        },\n        \"salary\": {\n          \"type\": \"string\"\n        },\n        \"job_url\": {\n          \"type\": \"string\"\n        }\n      },\n      \"required\": [\n        \"company\",\n        \"title\",\n        \"location\",\n        \"work_mode\",\n        \"employment_type\",\n        \"experience_required\",\n        \"salary\",\n        \"job_url\"\n      ],\n      \"additionalProperties\": false\n    },\n    \"match_analysis\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"match_score\": {\n          \"type\": \"number\"\n        },\n        \"recommendation\": {\n          \"type\": \"string\",\n          \"enum\": [\n            \"APPLY\",\n            \"CONSIDER\",\n            \"SKIP\"\n          ]\n        },\n        \"matching_skills\": {\n          \"type\": \"array\",\n          \"items\": {\n            \"type\": \"string\"\n          }\n        },\n        \"missing_skills\": {\n          \"type\": \"array\",\n          \"items\": {\n            \"type\": \"string\"\n          }\n        },\n        \"matching_experience\": {\n          \"type\": \"array\",\n          \"items\": {\n            \"type\": \"string\"\n          }\n        },\n        \"experience_gaps\": {\n          \"type\": \"array\",\n          \"items\": {\n            \"type\": \"string\"\n          }\n        },\n        \"reasoning\": {\n          \"type\": \"string\"\n        }\n      },\n      \"required\": [\n        \"match_score\",\n        \"recommendation\",\n        \"matching_skills\",\n        \"missing_skills\",\n        \"matching_experience\",\n        \"experience_gaps\",\n        \"reasoning\"\n      ],\n      \"additionalProperties\": false\n    },\n    \"interview_prep\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    },\n    \"resume_changes\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    },\n    \"source_evidence\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    },\n    \"limitations\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    }\n  },\n  \"required\": [\n    \"job\",\n    \"match_analysis\",\n    \"interview_prep\",\n    \"resume_changes\",\n    \"source_evidence\",\n    \"limitations\"\n  ],\n  \"additionalProperties\": false\n}",
+        "requestOptions": {}
+      },
+      "id": "86f274b4-59e9-4a8a-b286-4d7acea33f00",
+      "name": "Job Match JSON Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        180,
+        1040
+      ]
+    },
+    {
+      "parameters": {
+        "name": "job_page_reader",
+        "source": "parameter",
+        "description": "Retrieve and return readable text from a job posting URL. Use the full job URL as the query.",
+        "workflowJson": "{\"name\": \"Job Matcher - Job Page Reader\", \"nodes\": [{\"parameters\": {}, \"id\": \"c7e0f33d-2612-437e-ad2c-7ab0e122dbe2\", \"name\": \"Execute workflow\", \"type\": \"n8n-nodes-base.manualTrigger\", \"typeVersion\": 1, \"position\": [200, 300]}, {\"parameters\": {\"assignments\": {\"assignments\": [{\"id\": \"42f5a5c9-b724-4835-ae1a-89ba4e41773e\", \"name\": \"url\", \"value\": \"={{ $json.query }}\", \"type\": \"string\"}]}, \"includeOtherFields\": false, \"options\": {}}, \"id\": \"20ec7aa2-252b-4b8e-9ce3-9335846c539b\", \"name\": \"Set Job URL\", \"type\": \"n8n-nodes-base.set\", \"typeVersion\": 3.3, \"position\": [420, 300]}, {\"parameters\": {\"url\": \"={{ $json.url }}\", \"options\": {\"timeout\": 30000}}, \"id\": \"5a4ddf68-9c84-477f-b67b-3aec3ce99a8f\", \"name\": \"Fetch Job Page\", \"type\": \"n8n-nodes-base.httpRequest\", \"typeVersion\": 4.2, \"position\": [640, 300]}, {\"parameters\": {\"html\": \"={{ $json.data }}\", \"options\": {\"ignore\": \"a,img,script,style,noscript\"}}, \"id\": \"73d93ffb-b8e3-4444-aba9-bb73ddea17b5\", \"name\": \"Convert Job HTML\", \"type\": \"n8n-nodes-base.markdown\", \"typeVersion\": 1, \"position\": [860, 300]}, {\"parameters\": {\"assignments\": {\"assignments\": [{\"id\": \"243e5f43-ccb3-44b4-9d33-96b7d90d9fc9\", \"name\": \"response\", \"value\": \"={{ $json.data }}\", \"type\": \"string\"}]}, \"includeOtherFields\": false, \"options\": {}}, \"id\": \"3f6ec630-1363-445f-9bf8-b4c6220d7884\", \"name\": \"Return Job Text\", \"type\": \"n8n-nodes-base.set\", \"typeVersion\": 3.3, \"position\": [1080, 300]}], \"connections\": {\"Execute workflow\": {\"main\": [[{\"node\": \"Set Job URL\", \"type\": \"main\", \"index\": 0}]]}, \"Set Job URL\": {\"main\": [[{\"node\": \"Fetch Job Page\", \"type\": \"main\", \"index\": 0}]]}, \"Fetch Job Page\": {\"main\": [[{\"node\": \"Convert Job HTML\", \"type\": \"main\", \"index\": 0}]]}, \"Convert Job HTML\": {\"main\": [[{\"node\": \"Return Job Text\", \"type\": \"main\", \"index\": 0}]]}}, \"pinData\": {}}",
+        "requestOptions": {}
+      },
+      "id": "b40d77e2-288e-4030-81c8-b4ec217f6ac6",
+      "name": "Job Page Reader",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        400,
+        1040
+      ]
+    },
+    {
+      "parameters": {
+        "name": "job_search_reader",
+        "source": "parameter",
+        "description": "Retrieve readable text from a job search/results URL. Use this when the supplied URL contains multiple job listings.",
+        "workflowJson": "{\"name\": \"Job Matcher - Job Search Tool\", \"nodes\": [{\"parameters\": {}, \"id\": \"25c65f59-5d36-431a-85ba-7120e601d2f2\", \"name\": \"Execute workflow\", \"type\": \"n8n-nodes-base.manualTrigger\", \"typeVersion\": 1, \"position\": [200, 300]}, {\"parameters\": {\"assignments\": {\"assignments\": [{\"id\": \"cea83dd7-3112-40e1-8db2-cd02c5246a5f\", \"name\": \"search_url\", \"value\": \"={{ $json.query }}\", \"type\": \"string\"}]}, \"includeOtherFields\": false, \"options\": {}}, \"id\": \"65fdcdad-4e6f-41f8-b0f2-9c4726d3c6da\", \"name\": \"Build Search URL\", \"type\": \"n8n-nodes-base.set\", \"typeVersion\": 3.3, \"position\": [420, 300]}, {\"parameters\": {\"url\": \"={{ $json.search_url }}\", \"options\": {\"timeout\": 30000}}, \"id\": \"8c20f172-d62c-4096-acbd-4f63a8e09190\", \"name\": \"Fetch Search Page\", \"type\": \"n8n-nodes-base.httpRequest\", \"typeVersion\": 4.2, \"position\": [640, 300]}, {\"parameters\": {\"html\": \"={{ $json.data }}\", \"options\": {\"ignore\": \"script,style,noscript\"}}, \"id\": \"408d6297-2404-474d-acb7-a51a039f06bc\", \"name\": \"Convert Search Results\", \"type\": \"n8n-nodes-base.markdown\", \"typeVersion\": 1, \"position\": [860, 300]}, {\"parameters\": {\"assignments\": {\"assignments\": [{\"id\": \"fe6d102d-f08f-4495-a0fc-b2784cef499e\", \"name\": \"response\", \"value\": \"={{ $json.data }}\", \"type\": \"string\"}]}, \"includeOtherFields\": false, \"options\": {}}, \"id\": \"cbe03c34-cead-45fa-a3bc-f5d868b0b853\", \"name\": \"Return Search Results\", \"type\": \"n8n-nodes-base.set\", \"typeVersion\": 3.3, \"position\": [1080, 300]}], \"connections\": {\"Execute workflow\": {\"main\": [[{\"node\": \"Build Search URL\", \"type\": \"main\", \"index\": 0}]]}, \"Build Search URL\": {\"main\": [[{\"node\": \"Fetch Search Page\", \"type\": \"main\", \"index\": 0}]]}, \"Fetch Search Page\": {\"main\": [[{\"node\": \"Convert Search Results\", \"type\": \"main\", \"index\": 0}]]}, \"Convert Search Results\": {\"main\": [[{\"node\": \"Return Search Results\", \"type\": \"main\", \"index\": 0}]]}}, \"pinData\": {}}",
+        "requestOptions": {}
+      },
+      "id": "f3b13617-a8f8-40d7-aa92-8697dffb5727",
+      "name": "Job Search Reader",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        620,
+        1040
+      ]
+    },
+    {
+      "parameters": {
+        "name": "candidate_profile",
+        "source": "parameter",
+        "description": "Retrieve the candidate's baseline profile and technical skills. Use this before making the match analysis.",
+        "workflowJson": "{\"name\": \"Job Matcher - Candidate Profile Tool\", \"nodes\": [{\"parameters\": {}, \"id\": \"b58bc641-fc3e-4126-9b93-9cd8d114018e\", \"name\": \"Execute workflow\", \"type\": \"n8n-nodes-base.manualTrigger\", \"typeVersion\": 1, \"position\": [200, 300]}, {\"parameters\": {\"assignments\": {\"assignments\": [{\"id\": \"e584bffa-b4b6-4ab2-815e-5a9947abec5d\", \"name\": \"profile\", \"value\": \"Candidate: Data Science / AI candidate. Core skills: Python, SQL, Pandas, NumPy, Scikit-learn, TensorFlow/Keras, PyTorch, Machine Learning, Deep Learning, Statistics, Time Series, Generative AI, LLMs, RAG, NLP, Computer Vision, YOLOv8, BERT, Transformers, MLflow, Docker, FastAPI, Streamlit, GitHub. Education: M.Sc. Data Science and B.Sc. Data Science & Analytics. Use this only as the baseline profile; do not invent experience not present here.\", \"type\": \"string\"}]}, \"includeOtherFields\": false, \"options\": {}}, \"id\": \"22c53821-7276-410b-ab78-3898a15a2624\", \"name\": \"Candidate Profile\", \"type\": \"n8n-nodes-base.set\", \"typeVersion\": 3.3, \"position\": [440, 300]}, {\"parameters\": {\"assignments\": {\"assignments\": [{\"id\": \"d4e78a84-a904-4d0c-a903-12dc9fbaeef5\", \"name\": \"response\", \"value\": \"={{ $json.profile }}\", \"type\": \"string\"}]}, \"includeOtherFields\": false, \"options\": {}}, \"id\": \"718ceb96-e9c9-4619-af25-ea8553c8b092\", \"name\": \"Return Candidate Profile\", \"type\": \"n8n-nodes-base.set\", \"typeVersion\": 3.3, \"position\": [660, 300]}], \"connections\": {\"Execute workflow\": {\"main\": [[{\"node\": \"Candidate Profile\", \"type\": \"main\", \"index\": 0}]]}, \"Candidate Profile\": {\"main\": [[{\"node\": \"Return Candidate Profile\", \"type\": \"main\", \"index\": 0}]]}}, \"pinData\": {}}",
+        "requestOptions": {}
+      },
+      "id": "de642b92-d416-4e69-b6f5-820142352403",
+      "name": "Candidate Profile Tool",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        840,
+        1040
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\\nconst report = item.output ?? item;\\nconst score = report?.match_analysis?.match_score;\\nreturn [{ json: {\\n  ...report,\\n  workflow_name: 'Autonomous Job Hunter & Resume Matcher',\\n  generated_at: new Date().toISOString(),\\n  score_band: typeof score === 'number' ? (score >= 85 ? 'Excellent' : score >= 75 ? 'Strong' : score >= 55 ? 'Moderate' : 'Low') : 'Unknown'\\n} }];"
+      },
+      "id": "4b20557d-f65c-4573-8587-faca847cab5b",
+      "name": "Finalize Job Match",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        300,
+        720
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Result\n\nThe final JSON contains:\n- Job details\n- Match score\n- APPLY / CONSIDER / SKIP\n- Matching skills\n- Missing skills\n- Experience gaps\n- Resume changes\n- Interview preparation\n- Evidence + limitations",
+        "height": 300,
+        "width": 380,
+        "color": 6
+      },
+      "id": "05e138c8-4cbc-49b2-a202-a8dd2b3f94e6",
+      "name": "Output Notes",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        640,
+        570
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Job Research Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Job Research Input": {
+      "main": [
+        [
+          {
+            "node": "Job Match Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Job Match Agent": {
+      "main": [
+        [
+          {
+            "node": "Finalize Job Match",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Job Match Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Job Match JSON Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Job Match Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Job Page Reader": {
+      "ai_tool": [
+        [
+          {
+            "node": "Job Match Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Job Search Reader": {
+      "ai_tool": [
+        [
+          {
+            "node": "Job Match Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Candidate Profile Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "Job Match Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": []
+}

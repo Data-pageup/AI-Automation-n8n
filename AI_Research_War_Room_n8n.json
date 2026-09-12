@@ -1,0 +1,518 @@
+{
+  "name": "AI Research War Room",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "0ff99409-7053-4a6d-a97d-6e8c4625f8b8",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -900,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f94f6426-de3b-4564-91b6-c63ce73b1f51",
+              "name": "topic",
+              "value": "How will AI agents change software engineering workflows?",
+              "type": "string"
+            },
+            {
+              "id": "39c9f57f-a63b-40a8-8ec4-fe000300b12a",
+              "name": "research_question",
+              "value": "What is actually changing, what evidence supports it, and what should a data scientist/ML engineer pay attention to?",
+              "type": "string"
+            },
+            {
+              "id": "d2d755c3-8471-4b23-8ecc-995158a82838",
+              "name": "time_window",
+              "value": "Prefer recent evidence; prioritize the last 12 months when available.",
+              "type": "string"
+            },
+            {
+              "id": "0dfb8a8e-d334-4586-947f-f6a9fe0ea2cc",
+              "name": "audience",
+              "value": "Data Scientist / ML Engineer",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2260a141-ed41-433c-8d86-a70254910f26",
+      "name": "Research Brief",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        -680,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.tavily.com/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$env.TAVILY_API_KEY}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "bodyParametersJson": "={{ JSON.stringify({api_key: $env.TAVILY_API_KEY, query: $('Research Brief').item.json.topic + ' technical architecture benchmarks papers engineering evidence ' + $('Research Brief').item.json.time_window, search_depth: 'advanced', topic: 'general', max_results: 8, include_answer: true, include_raw_content: false}) }}",
+        "options": {}
+      },
+      "id": "2216b190-efa3-4ee2-8df2-4f9ef04245e6",
+      "name": "Technical Research Search",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        -420,
+        -280
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.tavily.com/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$env.TAVILY_API_KEY}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "bodyParametersJson": "={{ JSON.stringify({api_key: $env.TAVILY_API_KEY, query: $('Research Brief').item.json.topic + ' industry adoption companies market trends case studies ' + $('Research Brief').item.json.time_window, search_depth: 'advanced', topic: 'general', max_results: 8, include_answer: true, include_raw_content: false}) }}",
+        "options": {}
+      },
+      "id": "fe8a19ce-c181-4f8c-9710-b175cfec002a",
+      "name": "Industry Research Search",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        -420,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.tavily.com/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$env.TAVILY_API_KEY}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "bodyParametersJson": "={{ JSON.stringify({api_key: $env.TAVILY_API_KEY, query: $('Research Brief').item.json.topic + ' limitations risks criticism failures evidence counterarguments ' + $('Research Brief').item.json.time_window, search_depth: 'advanced', topic: 'general', max_results: 8, include_answer: true, include_raw_content: false}) }}",
+        "options": {}
+      },
+      "id": "86678917-cef5-462e-96cc-4fbd6c573770",
+      "name": "Critical Research Search",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        -420,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ JSON.stringify({topic: $('Research Brief').item.json.topic, question: $('Research Brief').item.json.research_question, search: $json}) }}",
+        "options": {
+          "systemMessage": "You are the technical researcher in an AI Research War Room. Analyze only the supplied search results. Extract concrete claims, technical mechanisms, benchmarks or papers, dates, and source URLs. Separate evidence from inference. Flag weak evidence. Return a concise research memo with: findings, evidence, source URLs, confidence, unknowns."
+        }
+      },
+      "id": "bcf33c9a-a67b-461b-aefa-f494b46c41ca",
+      "name": "Technical Research Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -120,
+        -280
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ JSON.stringify({topic: $('Research Brief').item.json.topic, question: $('Research Brief').item.json.research_question, search: $json}) }}",
+        "options": {
+          "systemMessage": "You are the industry researcher in an AI Research War Room. Analyze only the supplied search results. Look for adoption signals, real company examples, business impact, hiring/workflow implications, and current trends. Do not invent facts. Return findings, evidence, source URLs, confidence, and unknowns."
+        }
+      },
+      "id": "35e02569-1a1d-429b-8da5-3da2992dfe09",
+      "name": "Industry Research Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -120,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ JSON.stringify({topic: $('Research Brief').item.json.topic, question: $('Research Brief').item.json.research_question, search: $json}) }}",
+        "options": {
+          "systemMessage": "You are the skeptical researcher in an AI Research War Room. Stress-test the topic using only the supplied search results. Find limitations, counterexamples, risks, failed approaches, contradictory evidence, hype, and claims that are not well supported. Return findings, evidence, source URLs, confidence, and unknowns."
+        }
+      },
+      "id": "9ab70201-601c-429d-86f0-9917b92dd7dc",
+      "name": "Skeptic Research Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -120,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "append",
+        "numberInputs": 2
+      },
+      "id": "5c30714c-6446-4f68-8758-d8f588d6002b",
+      "name": "Merge Technical + Industry",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        180,
+        -140
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "append",
+        "numberInputs": 2
+      },
+      "id": "6932d94a-c8eb-4b03-a2d0-a6490ef58ccb",
+      "name": "Merge All Research",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        380,
+        40
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ JSON.stringify({topic: $('Research Brief').first().json.topic, research_question: $('Research Brief').first().json.research_question, audience: $('Research Brief').first().json.audience, independent_memos: $input.all().map(i => i.json.output || i.json.text || i.json)}) }}",
+        "options": {
+          "systemMessage": "You are the lead researcher. You receive independent technical, industry, and skeptical research memos. Produce a rigorous final research report. Cross-check claims across memos. Do not treat a claim as established merely because one memo says it. Prefer specific evidence and recent sources. Explicitly distinguish: confirmed evidence, reasonable inference, disagreement/uncertainty. Include: executive summary, key findings, technical reality, industry reality, skeptical view, evidence table, implications for the audience, practical recommendations, open questions, and source URLs. No fabricated citations."
+        }
+      },
+      "id": "9ab5e5b8-9fca-4a9e-affc-78057caa4264",
+      "name": "War Room Lead Synthesizer",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        620,
+        40
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const report = $json.output ?? $json.text ?? JSON.stringify($json);\nconst brief = $('Research Brief').first().json;\nreturn [{ json: {\n  title: `AI Research War Room \u2014 ${brief.topic}`,\n  topic: brief.topic,\n  research_question: brief.research_question,\n  audience: brief.audience,\n  generated_at: new Date().toISOString(),\n  report,\n  note: 'Three independent research passes were synthesized: technical, industry, and skeptical.'\n} }];"
+      },
+      "id": "63a1bbfd-4082-428f-a606-fd178566f864",
+      "name": "Format Final Report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        900,
+        40
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "id": "7b694e8b-c354-4f17-bf92-2617b2a1ac3e",
+      "name": "OpenAI Model - Technical",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -100,
+        -430
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "id": "53bfbd02-6899-4e49-9386-bb35eeaa3be6",
+      "name": "OpenAI Model - Industry",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -100,
+        -30
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "id": "be635ba6-3d77-4852-8c80-931461e0fb73",
+      "name": "OpenAI Model - Skeptic",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -100,
+        430
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "id": "407153d4-f50a-4be2-bfe0-675fcece8ca0",
+      "name": "OpenAI Model - Lead",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        420,
+        -160
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Research Brief",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Research Brief": {
+      "main": [
+        [
+          {
+            "node": "Technical Research Search",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Industry Research Search",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Critical Research Search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Technical Research Search": {
+      "main": [
+        [
+          {
+            "node": "Technical Research Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Industry Research Search": {
+      "main": [
+        [
+          {
+            "node": "Industry Research Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Critical Research Search": {
+      "main": [
+        [
+          {
+            "node": "Skeptic Research Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Technical Research Agent": {
+      "main": [
+        [
+          {
+            "node": "Merge Technical + Industry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Industry Research Agent": {
+      "main": [
+        [
+          {
+            "node": "Merge Technical + Industry",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Technical + Industry": {
+      "main": [
+        [
+          {
+            "node": "Merge All Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Skeptic Research Agent": {
+      "main": [
+        [
+          {
+            "node": "Merge All Research",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge All Research": {
+      "main": [
+        [
+          {
+            "node": "War Room Lead Synthesizer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "War Room Lead Synthesizer": {
+      "main": [
+        [
+          {
+            "node": "Format Final Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Model - Technical": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Technical Research Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Model - Industry": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Industry Research Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Model - Skeptic": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Skeptic Research Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Model - Lead": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "War Room Lead Synthesizer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d5bcb46e-2c91-4da8-8f2f-e164c5bbd820",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}

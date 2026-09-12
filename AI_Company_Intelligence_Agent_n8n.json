@@ -1,0 +1,292 @@
+{
+  "name": "AI Company Intelligence Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "# AI Company Intelligence Agent\n\nGive the workflow a company name + official website. The agent autonomously navigates the website using two tools, finds relevant pages such as About, Products, Technology and Careers, and produces an evidence-oriented structured company intelligence report.\n\nBuilt as a personal n8n agentic automation project.",
+        "height": 270,
+        "width": 440,
+        "color": 5
+      },
+      "id": "83cbb54e-a9a2-48c5-a49b-8c72880e85d8",
+      "name": "Project Overview",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -520,
+        20
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### Input\n\nChange the four values below before running:\n- Company name\n- Official website\n- Research objective\n- Target role/domain\n\nNo original template credentials are included.",
+        "height": 250,
+        "width": 360,
+        "color": 4
+      },
+      "id": "587ec7f2-34d9-4e9f-84fc-fe96a66ee872",
+      "name": "Input Notes",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -520,
+        360
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "a38f4494-a6b3-440a-a69a-ade0d851f98b",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        700
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ffcb17a8-2f46-4210-b7e9-1aab28ae03b2",
+              "name": "company_name",
+              "value": "Simreka",
+              "type": "string"
+            },
+            {
+              "id": "4b0f583a-8173-4173-8bf8-7be73b71831c",
+              "name": "company_website",
+              "value": "https://simreka.com",
+              "type": "string"
+            },
+            {
+              "id": "8c3fd5e0-b12e-4c94-9854-dd1409835656",
+              "name": "research_objective",
+              "value": "Understand the company's business, products, technology, AI usage, customers, hiring and career opportunities.",
+              "type": "string"
+            },
+            {
+              "id": "465a3002-fb44-4693-9e88-a21f0f268432",
+              "name": "target_role",
+              "value": "Data Scientist / Machine Learning Engineer / AI Engineer",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": false,
+        "options": {}
+      },
+      "id": "3bdf7d91-6132-4415-ae94-84af9502a0c7",
+      "name": "Research Input",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        -240,
+        700
+      ]
+    },
+    {
+      "parameters": {
+        "text": "=Research {{ $json.company_name }} using its official website {{ $json.company_website }}. Research objective: {{ $json.research_objective }} Target role/domain: {{ $json.target_role }}",
+        "options": {
+          "systemMessage": "You are an autonomous company intelligence research agent. Your job is to investigate a company starting from its official website. Use the website text tool to read pages and the website URL tool to discover links. Navigate relevant pages such as About, Products, Solutions, Technology, AI, Blog, News, Customers, Careers, Jobs, Team and Contact when available. Do not blindly crawl every link: prioritize pages relevant to the research objective. You may follow several relevant pages before producing the report. Use only information actually retrieved from the website or linked pages. Do not invent facts. If information cannot be verified, return an empty value and put the issue in limitations. Treat competitor information carefully: only include competitors or alternatives when the retrieved company material provides enough evidence; otherwise leave the array empty. For hiring information, prioritize official careers/job pages. For every key page, preserve the URL that was actually retrieved. The final answer must be structured according to the JSON parser schema."
+        },
+        "promptType": "define",
+        "hasOutputParser": true
+      },
+      "id": "669e5020-3b4d-4178-abc3-5430bcfe3fc1",
+      "name": "Company Intelligence Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        40,
+        700
+      ],
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {
+          "temperature": 0,
+          "responseFormat": "json_object"
+        },
+        "requestOptions": {}
+      },
+      "id": "bb29b430-fb47-4068-9fb2-775fd97a1c22",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        1000
+      ]
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"company\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"name\": {\n          \"type\": \"string\"\n        },\n        \"website\": {\n          \"type\": \"string\"\n        },\n        \"industry\": {\n          \"type\": \"string\"\n        },\n        \"headquarters\": {\n          \"type\": \"string\"\n        },\n        \"founded\": {\n          \"type\": \"string\"\n        },\n        \"company_size\": {\n          \"type\": \"string\"\n        },\n        \"business_model\": {\n          \"type\": \"string\"\n        },\n        \"summary\": {\n          \"type\": \"string\"\n        }\n      },\n      \"required\": [\n        \"name\",\n        \"website\",\n        \"industry\",\n        \"headquarters\",\n        \"founded\",\n        \"company_size\",\n        \"business_model\",\n        \"summary\"\n      ],\n      \"additionalProperties\": false\n    },\n    \"products_and_services\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"name\": {\n            \"type\": \"string\"\n          },\n          \"description\": {\n            \"type\": \"string\"\n          },\n          \"target_customer\": {\n            \"type\": \"string\"\n          }\n        },\n        \"required\": [\n          \"name\",\n          \"description\",\n          \"target_customer\"\n        ],\n        \"additionalProperties\": false\n      }\n    },\n    \"technology_and_ai\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    },\n    \"target_customers\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    },\n    \"career_and_hiring\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"careers_url\": {\n          \"type\": \"string\"\n        },\n        \"hiring_focus\": {\n          \"type\": \"array\",\n          \"items\": {\n            \"type\": \"string\"\n          }\n        },\n        \"roles_found\": {\n          \"type\": \"array\",\n          \"items\": {\n            \"type\": \"string\"\n          }\n        },\n        \"locations_found\": {\n          \"type\": \"array\",\n          \"items\": {\n            \"type\": \"string\"\n          }\n        }\n      },\n      \"required\": [\n        \"careers_url\",\n        \"hiring_focus\",\n        \"roles_found\",\n        \"locations_found\"\n      ],\n      \"additionalProperties\": false\n    },\n    \"competitors_or_alternatives\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"name\": {\n            \"type\": \"string\"\n          },\n          \"reason\": {\n            \"type\": \"string\"\n          }\n        },\n        \"required\": [\n          \"name\",\n          \"reason\"\n        ],\n        \"additionalProperties\": false\n      }\n    },\n    \"key_pages\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"title\": {\n            \"type\": \"string\"\n          },\n          \"url\": {\n            \"type\": \"string\"\n          },\n          \"why_relevant\": {\n            \"type\": \"string\"\n          }\n        },\n        \"required\": [\n          \"title\",\n          \"url\",\n          \"why_relevant\"\n        ],\n        \"additionalProperties\": false\n      }\n    },\n    \"research_takeaways\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    },\n    \"limitations\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    }\n  },\n  \"required\": [\n    \"company\",\n    \"products_and_services\",\n    \"technology_and_ai\",\n    \"target_customers\",\n    \"career_and_hiring\",\n    \"competitors_or_alternatives\",\n    \"key_pages\",\n    \"research_takeaways\",\n    \"limitations\"\n  ],\n  \"additionalProperties\": false\n}",
+        "requestOptions": {}
+      },
+      "id": "e7194b00-64a7-447a-aeaf-529990eb542f",
+      "name": "Company Intelligence JSON Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        200,
+        1000
+      ]
+    },
+    {
+      "parameters": {
+        "name": "website_text_tool",
+        "source": "parameter",
+        "description": "Read and return the text from a webpage. The query must be the full webpage URL. Use this to inspect company pages.",
+        "workflowJson": "{\"name\": \"Company Intelligence - Website Text Tool\", \"nodes\": [{\"parameters\": {}, \"id\": \"a2e18428-89f9-4a2b-96c6-3be9fe48d478\", \"name\": \"Execute workflow\", \"type\": \"n8n-nodes-base.manualTrigger\", \"typeVersion\": 1, \"position\": [200, 300]}, {\"parameters\": {\"assignments\": {\"assignments\": [{\"id\": \"ff360d99-29ad-4d20-b203-1a6fc8bade68\", \"name\": \"url\", \"value\": \"={{ $json.query }}\", \"type\": \"string\"}]}, \"includeOtherFields\": false, \"options\": {}}, \"id\": \"c10ef4a9-94be-47d2-9a46-a1a361fbb9a3\", \"name\": \"Set URL\", \"type\": \"n8n-nodes-base.set\", \"typeVersion\": 3.3, \"position\": [420, 300]}, {\"parameters\": {\"assignments\": {\"assignments\": [{\"id\": \"5fbd10ab-96d9-4535-b53e-e6c81ff80c41\", \"name\": \"url\", \"value\": \"={{ $json.url.startsWith('http') ? $json.url : 'https://' + $json.url }}\", \"type\": \"string\"}]}, \"includeOtherFields\": false, \"options\": {}}, \"id\": \"f6e4ed34-aae5-46b5-b8bb-e20ba38205da\", \"name\": \"Normalize URL\", \"type\": \"n8n-nodes-base.set\", \"typeVersion\": 3.3, \"position\": [640, 300]}, {\"parameters\": {\"url\": \"={{ $json.url }}\", \"options\": {\"timeout\": 30000}}, \"id\": \"a60492dd-0c20-4e4e-82e1-9be55473793c\", \"name\": \"Fetch webpage\", \"type\": \"n8n-nodes-base.httpRequest\", \"typeVersion\": 4.2, \"position\": [860, 300]}, {\"parameters\": {\"html\": \"={{ $json.data }}\", \"options\": {\"ignore\": \"a,img,script,style,noscript\"}}, \"id\": \"2c448499-880b-4fa8-a989-6ec4c780eb9f\", \"name\": \"Convert HTML to Markdown\", \"type\": \"n8n-nodes-base.markdown\", \"typeVersion\": 1, \"position\": [1080, 300]}, {\"parameters\": {\"assignments\": {\"assignments\": [{\"id\": \"4f59453e-1c63-45a6-9eb4-9b592dcb8fc1\", \"name\": \"response\", \"value\": \"={{ $json.data }}\", \"type\": \"string\"}]}, \"includeOtherFields\": false, \"options\": {}}, \"id\": \"e2b46590-b7bd-4f1e-9cf9-a39a5ea4ef56\", \"name\": \"Return Text\", \"type\": \"n8n-nodes-base.set\", \"typeVersion\": 3.3, \"position\": [1300, 300]}], \"connections\": {\"Execute workflow\": {\"main\": [[{\"node\": \"Set URL\", \"type\": \"main\", \"index\": 0}]]}, \"Set URL\": {\"main\": [[{\"node\": \"Normalize URL\", \"type\": \"main\", \"index\": 0}]]}, \"Normalize URL\": {\"main\": [[{\"node\": \"Fetch webpage\", \"type\": \"main\", \"index\": 0}]]}, \"Fetch webpage\": {\"main\": [[{\"node\": \"Convert HTML to Markdown\", \"type\": \"main\", \"index\": 0}]]}, \"Convert HTML to Markdown\": {\"main\": [[{\"node\": \"Return Text\", \"type\": \"main\", \"index\": 0}]]}}, \"pinData\": {}}",
+        "requestOptions": {}
+      },
+      "id": "8613cf2d-82c0-4cbf-a987-43a5b35be55f",
+      "name": "Website Text Tool",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        440,
+        1000
+      ]
+    },
+    {
+      "parameters": {
+        "name": "website_url_tool",
+        "source": "parameter",
+        "description": "Return valid links found on a webpage. The query must be the full webpage URL. Use this to discover relevant pages to crawl.",
+        "workflowJson": "{\"name\": \"Company Intelligence - Website URL Tool\", \"nodes\": [{\"parameters\": {}, \"id\": \"2b058a75-e2dc-44b0-8218-3b202f29d217\", \"name\": \"Execute workflow\", \"type\": \"n8n-nodes-base.manualTrigger\", \"typeVersion\": 1, \"position\": [200, 300]}, {\"parameters\": {\"assignments\": {\"assignments\": [{\"id\": \"3c185b9b-62ae-49a0-8e9e-6cdf6abde727\", \"name\": \"url\", \"value\": \"={{ $json.query }}\", \"type\": \"string\"}]}, \"includeOtherFields\": false, \"options\": {}}, \"id\": \"6096b483-ee66-4d7e-a547-60bb7b4f66d0\", \"name\": \"Set URL\", \"type\": \"n8n-nodes-base.set\", \"typeVersion\": 3.3, \"position\": [420, 300]}, {\"parameters\": {\"assignments\": {\"assignments\": [{\"id\": \"bf6a7bf4-7814-4172-9d8f-13b9b334a421\", \"name\": \"url\", \"value\": \"={{ $json.url.startsWith('http') ? $json.url : 'https://' + $json.url }}\", \"type\": \"string\"}]}, \"includeOtherFields\": false, \"options\": {}}, \"id\": \"b3c11580-ba95-4619-b207-eb7674c53bed\", \"name\": \"Normalize URL\", \"type\": \"n8n-nodes-base.set\", \"typeVersion\": 3.3, \"position\": [640, 300]}, {\"parameters\": {\"url\": \"={{ $json.url }}\", \"options\": {\"timeout\": 30000}}, \"id\": \"05437924-2b42-48bc-85d2-a18be6da0c99\", \"name\": \"Fetch webpage\", \"type\": \"n8n-nodes-base.httpRequest\", \"typeVersion\": 4.2, \"position\": [860, 300]}, {\"parameters\": {\"operation\": \"extractHtmlContent\", \"extractionValues\": {\"values\": [{\"key\": \"output\", \"cssSelector\": \"a\", \"returnValue\": \"attribute\", \"returnArray\": true}]}, \"options\": {}}, \"id\": \"eb06e5f3-a2c6-4f3c-bf1d-5fc7d5a8c2e5\", \"name\": \"Extract Links\", \"type\": \"n8n-nodes-base.html\", \"typeVersion\": 1.2, \"position\": [1080, 300]}, {\"parameters\": {\"fieldToSplitOut\": \"output\", \"options\": {}}, \"id\": \"ee27f4de-53db-44c4-a2a1-19dd559519e3\", \"name\": \"Split Links\", \"type\": \"n8n-nodes-base.splitOut\", \"typeVersion\": 1, \"position\": [1300, 300]}, {\"parameters\": {\"conditions\": {\"options\": {\"caseSensitive\": true, \"leftValue\": \"\", \"typeValidation\": \"strict\"}, \"conditions\": [{\"id\": \"9a9b4a5f-5a87-4044-8a60-c3141c5832e3\", \"leftValue\": \"={{ $json.href }}\", \"rightValue\": \"\", \"operator\": {\"type\": \"string\", \"operation\": \"exists\", \"singleValue\": true}}], \"combinator\": \"and\"}, \"options\": {}}, \"id\": \"df99e624-b2e2-42ea-bad5-2b32e98fd906\", \"name\": \"Filter Empty Links\", \"type\": \"n8n-nodes-base.filter\", \"typeVersion\": 2, \"position\": [1520, 300]}, {\"parameters\": {\"compare\": \"selectedFields\", \"fieldsToCompare\": \"href\", \"options\": {}}, \"id\": \"1a250f4f-c851-44a8-8f02-87bb89aa3e79\", \"name\": \"Remove Duplicates\", \"type\": \"n8n-nodes-base.removeDuplicates\", \"typeVersion\": 1, \"position\": [1740, 300]}, {\"parameters\": {\"assignments\": {\"assignments\": [{\"id\": \"71b2cc87-61e0-400c-bcd1-5130892aa7c3\", \"name\": \"href\", \"value\": \"={{ $json.href.startsWith('/') ? $('Normalize URL').item.json.url.replace(/\\\\/$/, '') + $json.href : $json.href }}\", \"type\": \"string\"}]}, \"includeOtherFields\": true, \"options\": {}}, \"id\": \"416f663c-a52d-42fc-b15c-ec4f9762c53e\", \"name\": \"Resolve Relative Links\", \"type\": \"n8n-nodes-base.set\", \"typeVersion\": 3.3, \"position\": [1960, 300]}, {\"parameters\": {\"conditions\": {\"options\": {\"caseSensitive\": true, \"leftValue\": \"\", \"typeValidation\": \"strict\"}, \"conditions\": [{\"id\": \"8caf139b-9743-44e3-964b-afc9c697fc0b\", \"leftValue\": \"={{ $json.href.isUrl() }}\", \"rightValue\": \"\", \"operator\": {\"type\": \"boolean\", \"operation\": \"true\", \"singleValue\": true}}], \"combinator\": \"and\"}, \"options\": {}}, \"id\": \"474a330a-06c2-416f-8c1a-f8b38a974351\", \"name\": \"Filter Valid URLs\", \"type\": \"n8n-nodes-base.filter\", \"typeVersion\": 2, \"position\": [2180, 300]}, {\"parameters\": {\"aggregate\": \"aggregateAllItemData\", \"include\": \"specifiedFields\", \"fieldsToInclude\": \"href\", \"options\": {}}, \"id\": \"0fb23753-2582-4e22-81cf-6a332ffb740f\", \"name\": \"Aggregate URLs\", \"type\": \"n8n-nodes-base.aggregate\", \"typeVersion\": 1, \"position\": [2400, 300]}, {\"parameters\": {\"assignments\": {\"assignments\": [{\"id\": \"19d4f94a-028a-433c-8c43-b5995f30cef5\", \"name\": \"response\", \"value\": \"={{ JSON.stringify($json) }}\", \"type\": \"string\"}]}, \"includeOtherFields\": false, \"options\": {}}, \"id\": \"7dc22a45-d0d0-4456-9849-698098599783\", \"name\": \"Return URLs\", \"type\": \"n8n-nodes-base.set\", \"typeVersion\": 3.3, \"position\": [2620, 300]}], \"connections\": {\"Execute workflow\": {\"main\": [[{\"node\": \"Set URL\", \"type\": \"main\", \"index\": 0}]]}, \"Set URL\": {\"main\": [[{\"node\": \"Normalize URL\", \"type\": \"main\", \"index\": 0}]]}, \"Normalize URL\": {\"main\": [[{\"node\": \"Fetch webpage\", \"type\": \"main\", \"index\": 0}]]}, \"Fetch webpage\": {\"main\": [[{\"node\": \"Extract Links\", \"type\": \"main\", \"index\": 0}]]}, \"Extract Links\": {\"main\": [[{\"node\": \"Split Links\", \"type\": \"main\", \"index\": 0}]]}, \"Split Links\": {\"main\": [[{\"node\": \"Filter Empty Links\", \"type\": \"main\", \"index\": 0}]]}, \"Filter Empty Links\": {\"main\": [[{\"node\": \"Remove Duplicates\", \"type\": \"main\", \"index\": 0}]]}, \"Remove Duplicates\": {\"main\": [[{\"node\": \"Resolve Relative Links\", \"type\": \"main\", \"index\": 0}]]}, \"Resolve Relative Links\": {\"main\": [[{\"node\": \"Filter Valid URLs\", \"type\": \"main\", \"index\": 0}]]}, \"Filter Valid URLs\": {\"main\": [[{\"node\": \"Aggregate URLs\", \"type\": \"main\", \"index\": 0}]]}, \"Aggregate URLs\": {\"main\": [[{\"node\": \"Return URLs\", \"type\": \"main\", \"index\": 0}]]}}, \"pinData\": {}}",
+        "requestOptions": {}
+      },
+      "id": "ce870c72-b24b-4cb4-9b77-0ccbf0aa6261",
+      "name": "Website URL Tool",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        680,
+        1000
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\\nconst report = input.output ?? input;\\nreturn [{ json: {\\n  ...report,\\n  workflow_name: 'AI Company Intelligence Agent',\\n  generated_at: new Date().toISOString()\\n} }];"
+      },
+      "id": "53873946-c025-4af2-8fe1-ebaeff51885c",
+      "name": "Finalize Intelligence Report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        300,
+        700
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### Output\n\nStructured company intelligence:\n- Company overview\n- Products & services\n- Technology / AI\n- Customers\n- Careers & hiring\n- Competitors / alternatives\n- Key source pages\n- Research takeaways\n- Limitations",
+        "height": 300,
+        "width": 380,
+        "color": 6
+      },
+      "id": "46d4aed7-4e40-4e22-b1c6-f463927a3b91",
+      "name": "Output Notes",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        620,
+        500
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Research Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Research Input": {
+      "main": [
+        [
+          {
+            "node": "Company Intelligence Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Company Intelligence Agent": {
+      "main": [
+        [
+          {
+            "node": "Finalize Intelligence Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Company Intelligence Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Company Intelligence JSON Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Company Intelligence Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Website Text Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "Company Intelligence Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Website URL Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "Company Intelligence Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": []
+}
