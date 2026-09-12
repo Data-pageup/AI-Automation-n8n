@@ -2,7 +2,7 @@
 
 # 🤖 AI Automation Lab
 
-### Autonomous agents that actually *do* the work — not just talk about it.
+### Autonomous agents that actually *do* the work not just talk about it.
 
 ![n8n](https://img.shields.io/badge/n8n-EA4B71?style=for-the-badge&logo=n8n&logoColor=white)
 ![OpenAI](https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white)
