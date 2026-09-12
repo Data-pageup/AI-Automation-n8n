@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🤖 AI Automation Lab
+# 🤖 AI Automation n8n
 
 ### Autonomous agents that actually *do* the work not just talk about it.
 
